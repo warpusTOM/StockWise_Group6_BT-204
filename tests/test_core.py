@@ -106,6 +106,25 @@ class TestSystem(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.system.register_product("A1", "Duplicate", 1.0)
 
+    def test_import_products_csv(self):
+        csv_path = Path(self.tmp.name) / "import.csv"
+        csv_path.write_text(
+            "sku,name,price,cost,quantity,category,restock_level,expiry\n"
+            "B1,Banana,15,10,20,Fruits,5,\n"
+            "A1,Apple Red,12.5,8,30,Fruits,5,\n",
+            encoding="utf-8",
+        )
+        added, updated = self.system.import_products_csv(csv_path)
+        self.assertEqual((added, updated), (1, 1))
+        self.assertEqual(self.system.inventory.get("A1").name, "Apple Red")
+        self.assertEqual(self.system.inventory.get("B1").quantity, 20)
+
+    def test_import_csv_missing_column_raises(self):
+        csv_path = Path(self.tmp.name) / "bad.csv"
+        csv_path.write_text("sku,name\nB1,Banana\n", encoding="utf-8")
+        with self.assertRaises(ValueError):
+            self.system.import_products_csv(csv_path)
+
     def test_seed_demo_data_only_once(self):
         # catalog already has A1 -> seed must skip entirely
         self.system.seed_demo_data()

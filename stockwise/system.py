@@ -56,6 +56,57 @@ class StockWiseSystem:
         self.inventory.remove(sku)
         self.db.delete_product(sku)
 
+    def import_products_csv(self, path: str | Path) -> tuple[int, int]:
+        """Bulk-import products from CSV. Existing SKUs are updated.
+
+        Columns (case-insensitive): sku, name, price, cost, quantity,
+        category, restock_level, expiry (YYYY-MM-DD, optional).
+        Returns (added, updated).
+        """
+        import csv
+
+        added = updated = 0
+        with open(path, newline="", encoding="utf-8-sig") as fh:
+            reader = csv.DictReader(fh)
+            headers = {h.strip().lower() for h in (reader.fieldnames or [])}
+            missing = {"sku", "name", "price"} - headers
+            if missing:
+                raise ValueError(
+                    f"CSV is missing columns: {', '.join(sorted(missing))}")
+            for raw in reader:
+                row = {k.strip().lower(): (v or "").strip()
+                       for k, v in raw.items() if k}
+                if not row.get("sku"):
+                    continue
+                expiry = (date.fromisoformat(row["expiry"])
+                          if row.get("expiry") else None)
+                existing = self.inventory.find(row["sku"])
+                simple_update = (existing is not None
+                                 and not isinstance(existing, PerishableProduct)
+                                 and expiry is None)
+                if simple_update:
+                    existing.name = row["name"]
+                    existing.price = float(row["price"])
+                    existing.cost = float(row.get("cost") or 0)
+                    existing.quantity = int(row.get("quantity") or 0)
+                    existing.category = row.get("category") or "General"
+                    existing.restock_level = int(row.get("restock_level") or 5)
+                    self.update_product(existing)
+                    updated += 1
+                else:
+                    if existing is not None:
+                        self.remove_product(row["sku"])  # type change -> recreate
+                    self.register_product(
+                        row["sku"], row["name"], float(row["price"]),
+                        cost=float(row.get("cost") or 0),
+                        quantity=int(row.get("quantity") or 0),
+                        category=row.get("category") or "General",
+                        restock_level=int(row.get("restock_level") or 5),
+                        expiry_date=expiry,
+                    )
+                    added += 1
+        return added, updated
+
     # ---- operations ---------------------------------------------------
     def sell(self, cart: Cart, amount_tendered: float) -> Sale:
         """Validate payment, deduct stock, persist everything."""

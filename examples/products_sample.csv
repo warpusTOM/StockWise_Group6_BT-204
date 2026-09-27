@@ -1,0 +1,16 @@
+﻿sku,name,price,cost,quantity,category,restock_level,expiry
+SKU-101,Instant Noodles Beef,28.00,20.00,50,Food,10,
+SKU-102,Instant Noodles Chicken,28.00,20.00,45,Food,10,
+SKU-103,Bottled Water 500ml,20.00,12.00,80,Beverage,15,
+SKU-104,Softdrinks 330ml Can,35.00,25.00,60,Beverage,12,
+SKU-105,Iced Coffee 230ml,45.00,30.00,24,Beverage,6,2026-09-30
+SKU-106,Orange Juice 250ml,30.00,20.00,36,Beverage,8,
+SKU-107,Potato Chips 80g,38.00,24.00,30,Snacks,8,
+SKU-108,Chocolate Bar 40g,50.00,32.00,25,Snacks,6,
+SKU-109,Candy Pack,15.00,8.00,100,Snacks,20,
+SKU-110,Sandwich Ham & Cheese,55.00,35.00,12,Food,4,2026-09-29
+SKU-111,Ballpen Black,12.00,7.00,70,School Supplies,15,
+SKU-112,Notebook 80 Leaves,35.00,22.00,40,School Supplies,10,
+SKU-113,Yellow Pad Paper,45.00,30.00,20,School Supplies,5,
+SKU-114,Fresh Milk 1L,95.00,70.00,8,Dairy,5,2026-10-02
+SKU-115,Energy Drink 250ml,60.00,42.00,18,Beverage,6,

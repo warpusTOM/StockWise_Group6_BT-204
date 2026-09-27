@@ -283,6 +283,8 @@ class StockWiseApp(ctk.CTk):
         btns.pack(fill="x", padx=8, pady=(0, 8))
         ctk.CTkButton(btns, text="Add / Save",
                       command=self._save_product).pack(side="left", padx=4)
+        ctk.CTkButton(btns, text="Import CSV", fg_color="#1f6aa5",
+                      command=self._import_csv).pack(side="left", padx=4)
         ctk.CTkButton(btns, text="Restock",
                       command=self._restock_selected).pack(side="left", padx=4)
         ctk.CTkButton(btns, text="Delete", fg_color="#a33",
@@ -369,6 +371,18 @@ class StockWiseApp(ctk.CTk):
         except (ValueError, KeyError) as exc:
             messagebox.showerror(APP_NAME, str(exc))
             return
+        self.refresh_all()
+
+    def _import_csv(self) -> None:
+        path = filedialog.askopenfilename(filetypes=[("CSV files", "*.csv")])
+        if not path:
+            return
+        try:
+            added, updated = self.system.import_products_csv(path)
+            messagebox.showinfo(
+                APP_NAME, f"Imported: {added} added, {updated} updated.")
+        except (ValueError, OSError) as exc:
+            messagebox.showerror(APP_NAME, str(exc))
         self.refresh_all()
 
     def _restock_selected(self) -> None:

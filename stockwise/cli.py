@@ -101,7 +101,7 @@ def _pos(system: StockWiseSystem) -> None:
 def _inventory(system: StockWiseSystem) -> None:
     while True:
         print("\n-- Inventory --")
-        print("l) List   a) Add product   r) Restock   d) Delete   b) Back")
+        print("l) List   a) Add product   i) Import CSV   r) Restock   d) Delete   b) Back")
         choice = input("> ").strip().lower()
         if choice == "b":
             return
@@ -131,6 +131,14 @@ def _inventory(system: StockWiseSystem) -> None:
                                             category, level, expiry)
                 print(f"Added {p}")
             except ValueError as exc:
+                print(f"Error: {exc}")
+            _pause()
+        elif choice == "i":
+            path = input("CSV path: ").strip().strip('"')
+            try:
+                added, updated = system.import_products_csv(path)
+                print(f"Imported: {added} added, {updated} updated.")
+            except (ValueError, OSError) as exc:
                 print(f"Error: {exc}")
             _pause()
         elif choice == "r":
