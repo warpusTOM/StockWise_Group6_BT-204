@@ -46,6 +46,17 @@ python main.py --demo    # seed sample products on first run
 python -m unittest discover -s tests -t . -v
 ```
 
+## Building the Windows exe
+
+```bash
+pip install pyinstaller customtkinter pillow
+python tools/make_icon.py     # regenerate assets/icon.ico (only if needed)
+python tools/build.py         # -> dist/StockWise.exe
+```
+
+The exe is a single portable file — no Python or internet needed. It creates
+`stockwise.db`, `receipts/`, and `exports/` next to itself on first run.
+
 ## Project structure
 
 ```
